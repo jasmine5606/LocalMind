@@ -1,0 +1,16 @@
+﻿target/
+!.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.log
+logs/
+.idea/
+*.iml
+.vscode/
+.env
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+项目技术难点总结.txt
