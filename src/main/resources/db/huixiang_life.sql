@@ -266,3 +266,58 @@ CREATE TABLE `tb_voucher_order`  (
 -- ----------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- Table structure for tb_blind_box
+-- ----------------------------
+DROP TABLE IF EXISTS `tb_blind_box`;
+CREATE TABLE `tb_blind_box` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `title` varchar(64) DEFAULT NULL COMMENT '盲盒标题',
+  `description` varchar(512) DEFAULT NULL COMMENT '盲盒描述',
+  `price` bigint(20) DEFAULT NULL COMMENT '盲盒价格(分)',
+  `begin_time` datetime DEFAULT NULL COMMENT '开始时间',
+  `end_time` datetime DEFAULT NULL COMMENT '结束时间',
+  `total_stock` int(11) DEFAULT NULL COMMENT '总库存',
+  `remain_stock` int(11) DEFAULT NULL COMMENT '剩余库存',
+  `status` int(11) DEFAULT '1' COMMENT '状态 1:进行中 0:已结束',
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Table structure for tb_blind_box_prize
+-- ----------------------------
+DROP TABLE IF EXISTS `tb_blind_box_prize`;
+CREATE TABLE `tb_blind_box_prize` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `blind_box_id` bigint(20) DEFAULT NULL COMMENT '盲盒ID',
+  `voucher_id` bigint(20) DEFAULT NULL COMMENT '优惠券ID',
+  `quantity` int(11) DEFAULT NULL COMMENT '该奖品数量',
+  `weight` int(11) DEFAULT NULL COMMENT '权重(概率=weight/totalWeight)',
+  `remain_quantity` int(11) DEFAULT NULL COMMENT '剩余数量',
+  `create_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_blind_box_id` (`blind_box_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Table structure for tb_blind_box_order
+-- ----------------------------
+DROP TABLE IF EXISTS `tb_blind_box_order`;
+CREATE TABLE `tb_blind_box_order` (
+  `id` bigint(20) NOT NULL COMMENT '主键(雪花算法)',
+  `user_id` bigint(20) DEFAULT NULL COMMENT '用户ID',
+  `blind_box_id` bigint(20) DEFAULT NULL COMMENT '盲盒ID',
+  `prize_voucher_id` bigint(20) DEFAULT NULL COMMENT '抽中的优惠券ID',
+  `request_id` varchar(64) DEFAULT NULL COMMENT '请求ID(幂等)',
+  `status` int(11) DEFAULT '1' COMMENT '状态 1:已支付 2:已核销 3:已退款',
+  `create_time` datetime DEFAULT NULL,
+  `pay_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_request_id` (`request_id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_blind_box_id` (`blind_box_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
