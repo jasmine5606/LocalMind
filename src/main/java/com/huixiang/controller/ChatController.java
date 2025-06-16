@@ -2,6 +2,7 @@ package com.huixiang.controller;
 
 import com.huixiang.dto.Result;
 import com.huixiang.service.AgentTools;
+import com.huixiang.service.BlindBoxDesigner;
 import com.huixiang.service.BusinessIntelligenceTools;
 import com.huixiang.service.ChatConfigService;
 import com.huixiang.service.ChatService;
@@ -35,6 +36,9 @@ public class ChatController {
     @Resource
     private ChatConfigService chatConfigService;
 
+    @Resource
+    private BlindBoxDesigner blindBoxDesigner;
+
     private final Map<String, StreamAssistant> streamSessions = new ConcurrentHashMap<>();
 
     interface StreamAssistant {
@@ -58,7 +62,7 @@ public class ChatController {
             AiServices.builder(StreamAssistant.class)
                 .streamingChatLanguageModel(QwenStreamingChatModel.builder()
                     .apiKey(chatConfigService.getApiKey()).modelName("qwen-max").build())
-                .tools(agentTools, biTools)
+                .tools(agentTools, biTools, blindBoxDesigner)
                 .chatMemory(MessageWindowChatMemory.withMaxMessages(20))
                 .build()
         );

@@ -24,6 +24,9 @@ public class ChatService {
     private BusinessIntelligenceTools biTools;
 
     @Resource
+    private BlindBoxDesigner blindBoxDesigner;
+
+    @Resource
     private ChatConfigService chatConfigService;
 
     private final Map<String, CustomerAgent> sessionAgents = new ConcurrentHashMap<>();
@@ -42,7 +45,7 @@ public class ChatService {
             CustomerAgent agent = sessionAgents.computeIfAbsent(sessionId, id -> {
                 return AiServices.builder(CustomerAgent.class)
                         .chatLanguageModel(chatModel)
-                        .tools(agentTools, biTools)
+                        .tools(agentTools, biTools, blindBoxDesigner)
                         .chatMemory(MessageWindowChatMemory.withMaxMessages(20))
                         .build();
             });
