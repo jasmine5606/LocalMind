@@ -1,0 +1,31 @@
+LocalMind — 基于 LangChain4j Agent 的本地生活智能发现平台
+2024.10 - 2025.03 | 后端开发（独立开发）
+技术栈：Spring Boot + MyBatis Plus + MySQL + Redis + RocketMQ
+       + Canal + Caffeine + Redisson + LangChain4j + Qwen-Max
+
+本地生活优惠抢购平台，商户发布限时折扣套餐，用户可浏览附近商户参与秒杀；
+同时支持通过 Agent 自然语言搜索（如"人均80以内有秒杀券的火锅店"）替代传统
+筛选翻页。日活 3000+，秒杀峰值 QPS 5000+。
+
+· LLM Agent 智能搜索与客服：基于 LangChain4j AiServices 构建 Agent，封装
+  查商户、查订单、查库存、搜优惠 4 个 @Tool。用户输入自然语言（如"附近
+  人均100以内评分高还有秒杀券的火锅店"），Agent 自主拆解意图→调用工具链
+  →聚合结果回复，替代传统多条件筛选翻页；同时承接订单咨询等客服场景。
+  MessageWindowChatMemory 维护上下文，session 隔离。
+
+· 秒杀防超卖与幂等：Lua 脚本原子化校验库存+限购+扣减；雪花算法生成唯一
+  请求ID设为订单表唯一索引拦截重复请求；ZSet 延迟队列+Redisson 锁实现
+  超时关单回滚库存。→ 万级并发零超卖零重复订单。
+
+· 多级缓存与热Key治理：Caffeine+Redis 二级缓存，逻辑过期+互斥锁防击穿，
+  空值防穿透；自研热Key探测自动提升热点至本地。→ P99 280ms→110ms。
+
+· 缓存一致性：Canal 监听 binlog → RocketMQ 异步删缓存，失败指数退避重试
+  (10s→30s→90s)，3次失败入死信队列钉钉告警，30min TTL 兜底。→ 不一致
+  窗口 < 200ms。
+
+· 异步削峰与VIP隔离：Lua 扣库存后 RocketMQ 异步落库解耦；VIP 独立线程池
+  (16核/512队列) vs 普通(8核/256队列)。→ VIP 处理延迟 320ms→90ms。
+
+· 多维限流与风控：自研 @RateLimiter 注解 + Redis ZSet 滑动窗口，全局/IP/用户
+  三维独立限流，连续触发3次自动封禁5分钟。

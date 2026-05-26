@@ -2,10 +2,10 @@ server:
   port: 8081
 spring:
   application:
-    name: hmdp
+    name: hui-xiang-life
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/hmdp?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/huixiang_life?useSSL=false&serverTimezone=UTC
     username: root
     password: 123
   redis:
@@ -21,9 +21,16 @@ spring:
   jackson:
     default-property-inclusion: non_null # JSON处理时忽略非空字段
 mybatis-plus:
-  type-aliases-package: com.hmdp.entity # 别名扫描包
+  type-aliases-package: com.huixiang.entity # 别名扫描包
 logging:
   level:
-    com.hmdp: debug
+    com.huixiang: debug
   pattern:
     dateformat: mm:ss.SSS
+
+kafka:
+  dlq:
+    topic: canal-events-dlq
+
+dingtalk:
+  webhook: https://oapi.dingtalk.com/robot/send?access_token=YOUR_TOKEN
